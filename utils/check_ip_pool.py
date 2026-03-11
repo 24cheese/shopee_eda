@@ -1,6 +1,5 @@
 from config.config import settings
-from view.utils import timer
-
+from utils.utils import timer 
 
 import os
 import logging
@@ -20,15 +19,16 @@ class CheckIPAddress:
     def __call__(self, test_times=5):
         async def get_ip_detail(client, query_url):
             try:
+                proxy_url = getattr(settings, 'PROXY_URL', None) 
                 async with client.get(
                     query_url,
-                    proxy=settings.PROXY_URL,
+                    proxy=proxy_url,
                 ) as response:
                     html = await response.text()
                     assert response.status == 200
-                    logger.info(f"└── IP: {html}")
+                    logger.info(f"Current IP: {html.strip()}")
             except Exception as e:
-                logger.warning(f"Exception: {e}")
+                logger.warning(f"Error checking IP: {e}")
 
         async def main(crawler_urls):
             headers = {
@@ -47,13 +47,6 @@ class CheckIPAddress:
             crawler_urls.append(self.ip_pool_api)
         asyncio.run(main(crawler_urls))
 
-        return "666"
-
-
 if __name__ == "__main__":
-
-    # // api example
-    # https://ipv4.webshare.io/
-
-    do = CheckIPAddress()
-    do(test_times=5)
+    check_ip = CheckIPAddress()
+    check_ip()

@@ -3,7 +3,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 def timer(function):
     def wrapper(*args, **kws):
         t_start = time.time()
